@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-task-tag-projects-already-scanned=AndEngine,AndEnginePhysicsBox2DExtension,MazeShooter,appcompat_v7,gridlayout_v7
+task-tag-projects-already-scanned=AndEngine-GLES2,AndEnginePhysicsBox2DExtension-GLES2,Ricochet,SpriteDemo

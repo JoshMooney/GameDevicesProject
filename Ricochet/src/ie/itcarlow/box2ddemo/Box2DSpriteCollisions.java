@@ -1,6 +1,4 @@
 package ie.itcarlow.box2ddemo;
-
-
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
@@ -29,7 +27,6 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-
 public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHandler {
 	// ===========================================================
 	// Constants
@@ -42,12 +39,12 @@ public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHa
 	// Fields
 	// ===========================================================
 
-	private BitmapTextureAtlas mTextureAustrianBear;
-	private BitmapTextureAtlas mTexturePiglet;
-	private ITextureRegion mAustrianBearTextureRegion;
-	private ITextureRegion mPigletTextureRegion;
+	private BitmapTextureAtlas PlayerOneTexture;
+	private BitmapTextureAtlas PlayerTwoTexture;
+	private ITextureRegion mPlayerOneTextureRegion;
+	private ITextureRegion mPlayerTwoTextureRegion;
 	private Scene mScene;
-	private Sprite mPiglet;	
+	private Sprite mPlayerTwo;	
 
 	private PhysicsWorld mPhysicsWorld;
 	Vector2 velocity, sprite1,sprite2;
@@ -68,7 +65,8 @@ public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHa
 	// ===========================================================
 
 	@Override
-	public EngineOptions onCreateEngineOptions() {
+	public EngineOptions onCreateEngineOptions() 
+	{
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
@@ -86,13 +84,13 @@ public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHa
 
     private void loadGfx() {     
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");  
-        mTextureAustrianBear = new BitmapTextureAtlas(getTextureManager(), 46, 54);  
-        mAustrianBearTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mTextureAustrianBear, this, "austrian_bear.png", 0, 0);
-        mTextureAustrianBear.load();
+        PlayerOneTexture = new BitmapTextureAtlas(getTextureManager(), 65, 65);  
+        mPlayerOneTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(PlayerOneTexture, this, "playerOne.png", 0, 0);
+        PlayerOneTexture.load();
         
-        mTexturePiglet = new BitmapTextureAtlas(getTextureManager(), 46, 54);  
-        mPigletTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mTexturePiglet, this, "piglet.png", 0, 0);
-        mTexturePiglet.load();
+        PlayerTwoTexture = new BitmapTextureAtlas(getTextureManager(), 65, 65);  
+        mPlayerTwoTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(PlayerTwoTexture, this, "playerTwo.png", 0, 0);
+        PlayerTwoTexture.load();
        
     }
 
@@ -116,12 +114,12 @@ public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHa
 
        // Setup coordinates for the sprite in order that it will
        //  be centered on the camera.
-	   final float centerX = (CAMERA_WIDTH - this.mAustrianBearTextureRegion.getWidth()) / 2;
-	   final float centerY = (CAMERA_HEIGHT - this.mAustrianBearTextureRegion.getHeight()) / 2;
+	   final float centerX = (CAMERA_WIDTH - this.mPlayerOneTextureRegion.getWidth()) / 2;
+	   final float centerY = (CAMERA_HEIGHT - this.mPlayerOneTextureRegion.getHeight()) / 2;
  
 	   // Create the austrian bear and add it to the scene.
 	   
-	   final Sprite austrianBear = new Sprite(centerX+100, centerY, this.mAustrianBearTextureRegion, this.getVertexBufferObjectManager())
+	   final Sprite PlayerOne = new Sprite(centerX+100, centerY, this.mPlayerOneTextureRegion, this.getVertexBufferObjectManager())
 	   {
            @Override
            public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
@@ -136,13 +134,13 @@ public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHa
        };
        //sprite1.x= austrianBear.getX();
       // sprite1.y= austrianBear.getY();
-      mPiglet = new Sprite(centerX, centerY, this.mPigletTextureRegion, this.getVertexBufferObjectManager())
+      mPlayerTwo = new Sprite(centerX, centerY, this.mPlayerTwoTextureRegion, this.getVertexBufferObjectManager())
 	   {
            @Override
            public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
                                         final float pTouchAreaLocalX,
                                         final float pTouchAreaLocalY) {
-               setBodyPosition(this, austrianBear, pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
+               setBodyPosition(this, PlayerOne, pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
                return true;
            }
        };
@@ -152,17 +150,15 @@ public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHa
        //austrianBear.setPosition(austrianBear.getX() + velocity.x, austrianBear.getY() + velocity.y); 
        
        
-	   mScene.attachChild(austrianBear);
-	   this.mScene.registerTouchArea(austrianBear);
-	   mScene.attachChild(mPiglet);
-	   this.mScene.registerTouchArea(mPiglet);
+	   mScene.attachChild(PlayerOne);
+	   this.mScene.registerTouchArea(PlayerOne);
+	   mScene.attachChild(mPlayerTwo);
+	   this.mScene.registerTouchArea(mPlayerTwo);
 	   
 	   setUpBox2DWorld();
 	   
-	   // The bear sprite (unlike the piglet sprite) is a local variable, 
-	   //  so it must be passed to method createPhysicsBodies
-	   createPhysicsBodies(austrianBear);  
-	   createPhysicsBodies(mPiglet);  	   
+	   createPhysicsBodies(PlayerOne);  
+	   createPhysicsBodies(mPlayerTwo);  	   
 	   this.mEngine.registerUpdateHandler(this);
 	   pOnPopulateSceneCallback.onPopulateSceneFinished();
     }
@@ -184,14 +180,14 @@ public class Box2DSpriteCollisions extends BaseGameActivity implements IUpdateHa
     	velocity = Vector2Pool.obtain(velX, velY);
     }
     
-    private void createPhysicsBodies(final Sprite austrianBear) {
+    private void createPhysicsBodies(final Sprite Playerone) {
     	// Create your Box2D bodies here.
     	final FixtureDef PLAYER_FIX = PhysicsFactory.createFixtureDef(1.5f,0.45f, 0.3f);
     	Body body = PhysicsFactory.createCircleBody(
- 			   mPhysicsWorld, austrianBear, BodyType.DynamicBody, 
+ 			   mPhysicsWorld, Playerone, BodyType.DynamicBody, 
  			   PLAYER_FIX);
-    	mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(austrianBear, body, true, true));
-    	 austrianBear.setUserData(body);
+    	mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(Playerone, body, true, true));
+    	 Playerone.setUserData(body);
     	 body.applyLinearImpulse(velocity, body.getWorldCenter());
 
 
@@ -242,7 +238,7 @@ private ContactListener createContactListener() {
         public void beginContact(Contact contact) {
         	mCollided = true;
         	/*Body body = contact.getFixtureA().getBody();
-        	if(body.getUserData().equals("piglet")) {
+        	if(body.getUserData().equals("PlayerTwo")) {
         		
         	} */
         }
@@ -276,13 +272,13 @@ public void onUpdate(float pSecondsElapsed) {
 			//@Override
 			//public void run() {
 				// Find the physics connector associated with the sprite mPiglet
-				PhysicsConnector connector = mPhysicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(mPiglet);
+				PhysicsConnector connector = mPhysicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(mPlayerTwo);
 				// Unregister the physics connector
 				mPhysicsWorld.unregisterPhysicsConnector(connector);
 				// Destroy the body
 				mPhysicsWorld.destroyBody(connector.getBody());
 				
-				mScene.detachChild(mPiglet);
+				mScene.detachChild(mPlayerTwo);
 		//}
 		//});
 		mCollided = false;
